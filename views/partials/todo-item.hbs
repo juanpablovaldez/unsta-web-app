@@ -1,0 +1,12 @@
+<li class="todo-item {{#if completed}}completed{{/if}}">
+  <form action="/{{_id}}/toggle" method="POST">
+    <input type="checkbox" onchange="this.form.submit()" {{#if completed}}checked{{/if}} title="Toggle complete">
+  </form>
+  <span class="title">{{title}}</span>
+  <div class="actions">
+    <a href="/{{_id}}/edit" class="btn btn-secondary">Edit</a>
+    <form action="/{{_id}}/delete" method="POST">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
+</li>
