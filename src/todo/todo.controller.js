@@ -10,29 +10,35 @@ class TodoController {
     res.render('index', { todos });
   }
 
-  async createTodo(req, res) {
+  async createTodo(req, res, next) {
     try {
       await this.service.create(req.body);
       res.redirect('/');
     } catch (err) {
-      const todos = await this.service.findAll();
-      res.render('index', { todos, error: err.message });
+      if (err.isOperational) {
+        const todos = await this.service.findAll();
+        return res.render('index', { todos, error: err.message });
+      }
+      next(err);
     }
   }
 
   async showEditForm(req, res) {
-    const todo = await this.service.findById(req.params.id);
-    if (!todo) return res.redirect('/');
+    const todo = await this.service.findByIdOrFail(req.params.id);
     res.render('edit', { todo });
   }
 
-  async updateTodo(req, res) {
+  async updateTodo(req, res, next) {
     try {
-      await this.service.update(req.params.id, req.body);
+      const completed = req.body.completed === 'on';
+      await this.service.update(req.params.id, { ...req.body, completed });
       res.redirect('/');
     } catch (err) {
-      const todo = await this.service.findById(req.params.id);
-      res.render('edit', { todo, error: err.message });
+      if (err.isOperational) {
+        const todo = await this.service.findById(req.params.id);
+        return res.render('edit', { todo, error: err.message });
+      }
+      next(err);
     }
   }
 
@@ -42,8 +48,8 @@ class TodoController {
   }
 
   async toggleTodo(req, res) {
-    const todo = await this.service.findById(req.params.id);
-    if (todo) await this.service.toggle(req.params.id, todo.completed);
+    const todo = await this.service.findByIdOrFail(req.params.id);
+    await this.service.toggle(req.params.id, todo.completed);
     res.redirect('/');
   }
 }
