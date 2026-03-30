@@ -1,20 +1,33 @@
-<h1>My Tasks</h1>
+<div class="page-header">
+  <h1>My Tasks</h1>
+</div>
 
 {{#if error}}
-  <p class="error">{{error}}</p>
+  <p class="error" role="alert">{{error}}</p>
 {{/if}}
 
 <form class="create-form" action="/" method="POST">
-  <input type="text" name="title" placeholder="What needs to be done?" maxlength="200" autofocus>
+  <label for="new-task" class="sr-only">New task title</label>
+  <input
+    type="text"
+    id="new-task"
+    name="title"
+    placeholder="What needs to be done?"
+    maxlength="200"
+    autocomplete="off"
+    autofocus
+  >
   <button type="submit" class="btn btn-primary">Add</button>
 </form>
 
 {{#if todos.length}}
-  <ul class="todo-list">
+  <ul class="todo-list" aria-label="Task list">
     {{#each todos}}
       {{> todo-item}}
     {{/each}}
   </ul>
 {{else}}
-  <p class="empty-state">No tasks yet. Add one above!</p>
+  <div class="empty-state">
+    <p>No tasks yet — add one above.</p>
+  </div>
 {{/if}}
